@@ -2,8 +2,8 @@ const router = require("express").Router();
 const faker = require("faker");
 const Product = require("../models/product");
 const Review = require("../models/review");
-const {messages} = require("../utility/responseHelpers") 
-
+const { ResponseMessages } = require("../utility/responseHelpers"); 
+const { tryTo } = require("../utility/requestHelpers");
 
 router.get("/generate-fake-data", (req, res, next) => {
   for (let i = 0; i < 90; i++) {
@@ -58,17 +58,65 @@ router.get("/products", (req, res, next) => {
 router.get("/products/:id", async (req, res, next) => {
   const { id } = req.params;
 
-  if (!id) return res.status(400).send(messages[400]);
+  if (!id) return res.status(400).send(ResponseMessages[400]);
 
-  try {
+  tryTo(next, async () => {
     const result = await Product.findById({_id : id});
-    console.log(result);
     res.send(result);
-           
-  } catch (err) {
-    console.error(err);
-  }
+  });
 
+});
+
+router.get("/products/:id/reviews", async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!id) return res.status(400).send(ResponseMessages[400]);
+
+  tryTo(next, async () => {
+    // Todo: Limit to 4 reviews for pagination
+    const result = await Review.find({product : id});
+    res.send(result);       
+  });
+
+});
+
+router.post("/products", (req, res, next) => {
+  const productData = JSON.parse(req.body.product);
+  if(!productData) return res.status(400).send(ResponseMessages[400]);
+
+  tryTo(next, () => {
+    // Todo: validate post data
+    const product = new Product(productData);
+    product.save();
+    res.status(200).send(product._id);
+  });
+
+});
+
+router.post("/products/:id/reviews", (req, res, next) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).send(ResponseMessages[400]);
+
+  const reviewData = JSON.parse(req.body.review);
+  if (!reviewData) return res.status(400).send(ResponseMessages[400]);
+
+  tryTo(next, async () => {
+    // todo: Create helper function for routes
+    const product = await Product.findById({_id : id});
+    const review = new Review({product: product._id, ...reviewData});
+    review.save();
+    product.reviews.push(review);
+    product.save();
+    res.status(200).send(review._id);
+  });
 })
+
+
+
+
+
+
+
+
 
 module.exports = router;
