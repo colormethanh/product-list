@@ -1,8 +1,8 @@
 
 
-const tryTo = (next, callback) => {
+const tryTo = async (next, callback) => {
   try {
-    callback();
+    await callback();
   } catch (err) {
     next(err);
   }

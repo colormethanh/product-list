@@ -57,17 +57,17 @@ router.get("/products", (req, res, next) => {
 
 router.get("/products/:id", async (req, res, next) => {
   const { id } = req.params;
-
   if (!id) return res.status(400).send(ResponseMessages[400]);
 
   tryTo(next, async () => {
-    const result = await Product.findById({_id : id});
-    res.send(result);
+    const product = await Product.findById(id);
+    if (!product) return res.status(404).send(ResponseMessages[404]);
+    res.send(product);
   });
 
 });
 
-router.get("/products/:id/reviews", async (req, res, next) => {
+router.get("/products/:id/reviews", (req, res, next) => {
   const { id } = req.params;
 
   if (!id) return res.status(400).send(ResponseMessages[400]);
@@ -101,14 +101,57 @@ router.post("/products/:id/reviews", (req, res, next) => {
   if (!reviewData) return res.status(400).send(ResponseMessages[400]);
 
   tryTo(next, async () => {
-    // todo: Create helper function for routes
+    // Todo: Create helper for finding models
     const product = await Product.findById({_id : id});
+    if (!product) return res.send(404).send(ResponseMessages[404]);
+
+    // todo: Create helper function for routes
     const review = new Review({product: product._id, ...reviewData});
     review.save();
     product.reviews.push(review);
     product.save();
     res.status(200).send(review._id);
   });
+});
+
+
+router.delete("/products/:id", (req, res, next) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).send(ResponseMessages[400]);
+
+  tryTo(next, async () => {
+    // check if product exists
+    const product = await Product.findById(id);
+    if (!product) return res.status(404).send(ResponseMessages[404]);
+
+    // Delete product
+    Product.findByIdAndDelete({_id: id}).exec();
+    
+    // Delete reviews associated with product
+    Review.deleteMany({product: id}).exec();
+
+    res.status(200).send(`Deleted product: ${id}`);
+  });
+});
+
+router.delete("/reviews/:id", (req, res, next) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).send(ResponseMessages[400]);
+
+  tryTo(next, async () => {
+    const review = await Review.findById(id);
+    if (!review) return res.status(404).send(ResponseMessages[404]);
+    
+    const product = await Product.findById(review.product);
+    if (!product) return res.status(404).send(ResponseMessages[404]);
+
+    Review.findByIdAndDelete(id).exec();
+
+    Product.updateOne({_id: product._id}, {$pull: {reviews : { _id: id }}}).exec();
+
+    res.status(200).send(`Deleted product: ${id}`);
+  })
+
 })
 
 
