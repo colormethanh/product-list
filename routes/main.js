@@ -2,7 +2,7 @@ const router = require("express").Router();
 const faker = require("faker");
 const Product = require("../models/product");
 const Review = require("../models/review");
-const { ResponseMessages } = require("../utility/responseHelpers"); 
+const { ResponseMessages, sendResponse } = require("../utility/responseHelpers"); 
 const { tryTo } = require("../utility/requestHelpers");
 
 router.get("/generate-fake-data", (req, res, next) => {
@@ -42,123 +42,122 @@ router.get("/generate-fake-data", (req, res, next) => {
 
 router.get("/products", (req, res, next) => {
   const perPage = 9;
-  const page = req.query.page || 0;
-  Product.find({})
-         .skip(perPage * page - page)
-         .limit(perPage)
-         .then((products, error) => {
-          Product.countDocuments()
-                 .then((count, err) => {
-                  console.log(count);
-                })
-          res.send(products);
-        });
+
+  const {category, price, query, page = 1} = req.query
+  
+  const searchQuery = {};
+  if (category) searchQuery.category = category;
+  if (query) searchQuery.name = {$regex : query, $options: "i"};
+  
+  tryTo(next, async () => {
+    const productCount = await Product.countDocuments(searchQuery);
+    const max_page_ct = Math.ceil(productCount / 9);
+
+    if (page > max_page_ct) return sendResponse(res, 400, "Requested page exceed page count");
+
+    const products = await Product.find(searchQuery)
+                                  .skip(perPage * (page - 1))
+                                  .limit(perPage)
+                                  .sort(price ? {"price" : parseInt(price)} : {});
+    
+    return sendResponse(res, 200, products);
+  }); 
 });
 
 router.get("/products/:id", async (req, res, next) => {
   const { id } = req.params;
-  if (!id) return res.status(400).send(ResponseMessages[400]);
+  if (!id) return sendResponse(res, 400);
 
   tryTo(next, async () => {
     const product = await Product.findById(id);
     if (!product) return res.status(404).send(ResponseMessages[404]);
-    res.send(product);
+    return sendResponse(res, 200, product);
   });
 
 });
 
 router.get("/products/:id/reviews", (req, res, next) => {
   const { id } = req.params;
-
-  if (!id) return res.status(400).send(ResponseMessages[400]);
+  if (!id) return sendResponse(res, 400);
 
   tryTo(next, async () => {
-    // Todo: Limit to 4 reviews for pagination
-    const result = await Review.find({product : id});
-    res.send(result);       
+    const result = await Review.find({product : id}).limit(4);
+    return sendResponse(res, 200, result);       
   });
-
 });
 
 router.post("/products", (req, res, next) => {
   const productData = JSON.parse(req.body.product);
-  if(!productData) return res.status(400).send(ResponseMessages[400]);
+  if(!productData) return sendResponse(res, 400);
 
   tryTo(next, () => {
     // Todo: validate post data
     const product = new Product(productData);
     product.save();
-    res.status(200).send(product._id);
+    return sendResponse(res, 200, product._id);
   });
-
 });
 
 router.post("/products/:id/reviews", (req, res, next) => {
   const { id } = req.params;
-  if (!id) return res.status(400).send(ResponseMessages[400]);
+  if (!id) return sendResponse(res, 400);
 
   const reviewData = JSON.parse(req.body.review);
-  if (!reviewData) return res.status(400).send(ResponseMessages[400]);
+  if (!reviewData) return sendResponse(res, 400);
 
   tryTo(next, async () => {
     // Todo: Create helper for finding models
     const product = await Product.findById({_id : id});
-    if (!product) return res.send(404).send(ResponseMessages[404]);
+    if (!product) return sendResponse(res, 404);
 
     // todo: Create helper function for routes
     const review = new Review({product: product._id, ...reviewData});
     review.save();
     product.reviews.push(review);
     product.save();
-    res.status(200).send(review._id);
+    return sendResponse(res, 400, review._id);
   });
 });
 
 
 router.delete("/products/:id", (req, res, next) => {
   const { id } = req.params;
-  if (!id) return res.status(400).send(ResponseMessages[400]);
+  if (!id) return sendResponse(res, 400);
 
   tryTo(next, async () => {
     // check if product exists
     const product = await Product.findById(id);
-    if (!product) return res.status(404).send(ResponseMessages[404]);
+    if (!product) return sendResponse(res, 404);
 
     // Delete product
     Product.findByIdAndDelete({_id: id}).exec();
     
     // Delete reviews associated with product
     Review.deleteMany({product: id}).exec();
-
-    res.status(200).send(`Deleted product: ${id}`);
+   
+    return sendResponse(res, 200, `Deleted product: ${id}`);
   });
 });
 
 router.delete("/reviews/:id", (req, res, next) => {
   const { id } = req.params;
-  if (!id) return res.status(400).send(ResponseMessages[400]);
+  if (!id) return sendResponse(res, 400);
 
   tryTo(next, async () => {
     const review = await Review.findById(id);
-    if (!review) return res.status(404).send(ResponseMessages[404]);
-    
+    if (!review) return sendResponse(res, 404, "Review could not be found");
+
     const product = await Product.findById(review.product);
-    if (!product) return res.status(404).send(ResponseMessages[404]);
+    if (!product) return sendResponse(res, 404, "Product could not be found");
 
     Review.findByIdAndDelete(id).exec();
 
     Product.updateOne({_id: product._id}, {$pull: {reviews : { _id: id }}}).exec();
 
-    res.status(200).send(`Deleted product: ${id}`);
+    return sendResponse(res, 200, `Deleted product ${id}`);
   })
 
-})
-
-
-
-
-
-
+});
 
 
 

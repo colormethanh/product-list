@@ -7,4 +7,8 @@ const ResponseMessages = {
   500 : "Server error"
 };
 
-module.exports = {ResponseMessages}
+const sendResponse = (res, code, custom_response=null) => {
+  return res.status(code).send(custom_response || ResponseMessages[code]);
+}
+
+module.exports = {ResponseMessages, sendResponse}
