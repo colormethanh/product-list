@@ -60,7 +60,7 @@ router.get("/products", (req, res, next) => {
                                   .limit(perPage)
                                   .sort(price ? {"price" : parseInt(price)} : {});
     
-    return sendResponse(res, 200, products);
+    return sendResponse(res, 200, {"products":products, "product_count": productCount, "current_page": page, "max_page": max_page_ct});
   }); 
 });
 
@@ -158,7 +158,5 @@ router.delete("/reviews/:id", (req, res, next) => {
   })
 
 });
-
-
 
 module.exports = router;
