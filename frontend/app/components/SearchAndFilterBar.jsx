@@ -1,22 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
+import { createKey } from "../utilities/helpers";
 
-export default function SearchAndFilterBar() {
+export default function SearchAndFilterBar({
+  categories,
+  queries,
+  setQueries,
+}) {
+  const [selectedSort, setSelectedSort] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const handleSortSelect = (e) => {
+    console.log(`price sort: ${e.target.value}`);
+    setSelectedSort(e.target.value);
+    setQueries((prev) => ({ ...prev, price: e.target.value }));
+  };
+
+  const handleCategorySelect = (e) => {
+    console.log(`category: ${e.target.value}`);
+    setSelectedCategory(e.target.value);
+    setQueries((prev) => ({ ...prev, category: e.target.value }));
+  };
+
   return (
-    <div className="text-black">
+    <div className="text-black w-full flex justify-center">
       <input
         type="text"
-        className="border rounded-sm px-4 py-2 focus:outline-none"
+        className="w-3/5 border rounded-sm px-4 py-2 focus:outline-none"
         placeholder="Enter text"
+        onKeyUp={(e) => {
+          console.log(e.key);
+        }}
       />
-      <select class="border rounded-sm mx-1 px-4 py-2 focus:outline-none">
-        <option value="option1">Option 1</option>
-        <option value="option2">Option 2</option>
-        <option value="option3">Option 3</option>
+      <select
+        className="border mx-3 rounded-sm px-4 py-2 focus:outline-none"
+        value={selectedSort}
+        onChange={handleSortSelect}
+      >
+        <option value=""> sort: Most Relevant </option>
+        <option value="-1">Sort: Price Highest first</option>
+        <option value="1">Sort: Price Lowest first</option>
       </select>
-      <select class="border rounded-sm mx-1 px-4 py-2 focus:outline-none">
-        <option value="option1">Option 1</option>
-        <option value="option2">Option 2</option>
-        <option value="option3">Option 3</option>
+      <select
+        className="border rounded-sm px-4 py-2 focus:outline-none"
+        value={selectedCategory}
+        onChange={handleCategorySelect}
+      >
+        <option key={createKey()} value="">
+          Search from category
+        </option>
+        {categories.map((category) => (
+          <option key={createKey()} value={category}>
+            {" "}
+            {category}{" "}
+          </option>
+        ))}
       </select>
     </div>
   );

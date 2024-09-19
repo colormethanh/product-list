@@ -2,17 +2,26 @@ import React from "react";
 import Button from "./Button";
 import PaginationNumbers from "./PaginationNumbers";
 
-export default function PaginatorBar({ pageData, fetchFunction }) {
+export default function PaginatorBar({
+  pageData,
+  fetchFunction,
+  queries,
+  setQueries,
+}) {
   const { current_page, max_page, product_count } = pageData;
 
   const onNextPage = (e) => {
     e.preventDefault();
-    fetchFunction({ page: parseInt(current_page) + 1 });
+    const updatedQuery = { ...queries, page: parseInt(current_page) + 1 };
+    setQueries(updatedQuery);
+    fetchFunction(updatedQuery);
   };
 
   const onPrevPage = (e) => {
     e.preventDefault();
-    fetchFunction({ page: parseInt(current_page - 1) });
+    const updatedQuery = { ...queries, page: parseInt(current_page) - 1 };
+    setQueries(updatedQuery);
+    fetchFunction(updatedQuery);
   };
 
   return (
