@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { createKey } from "../utilities/helpers";
 
 export default function SearchAndFilterBar({
@@ -6,6 +6,7 @@ export default function SearchAndFilterBar({
   queries,
   setQueries,
 }) {
+  const [productNameInput, setProductNameInput] = useState("");
   const [selectedSort, setSelectedSort] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
@@ -21,15 +22,26 @@ export default function SearchAndFilterBar({
     setQueries((prev) => ({ ...prev, category: e.target.value }));
   };
 
+  const handleProductSearch = (e) => {
+    if (e.key === "Enter") {
+      setQueries((prev) => ({...prev, productName: productNameInput}));
+      setProductNameInput("");
+    };
+  };
+
+  const handleInputChange = (e) => {
+    setProductNameInput(e.target.value);
+  }
+
   return (
-    <div className="text-black w-full flex justify-center">
+    <div className="text-black w-full mt-3 flex justify-center">
       <input
         type="text"
         className="w-3/5 border rounded-sm px-4 py-2 focus:outline-none"
         placeholder="Enter text"
-        onKeyUp={(e) => {
-          console.log(e.key);
-        }}
+        value={productNameInput}
+        onChange={handleInputChange}
+        onKeyUp={handleProductSearch}
       />
       <select
         className="border mx-3 rounded-sm px-4 py-2 focus:outline-none"

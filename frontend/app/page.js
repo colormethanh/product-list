@@ -15,14 +15,21 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      <h1> Products </h1>
-      <SearchAndFilterBar queries={queries} setQueries={setQueries} categories={!isLoading ? pageData.categories : []}/>
+      <SearchAndFilterBar
+        queries={queries}
+        setQueries={setQueries}
+        categories={!isLoading ? pageData.categories : []}
+      />
       {!isLoading && (
         <>
+          {pageData.product_count === 0 && (
+            <h1 className="text-3xl text-center"> No products found :( </h1>
+          )}
           <ProductsContainer>
-            {products.map((product) => {
-              return <ProductCard key={createKey()} product={product} />;
-            })}
+            {pageData.product_count > 0 &&
+              products.map((product) => {
+                return <ProductCard key={createKey()} product={product} />;
+              })}
           </ProductsContainer>
           <PaginatorBar
             pageData={pageData}

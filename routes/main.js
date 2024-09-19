@@ -44,7 +44,8 @@ router.get("/generate-fake-data", (req, res, next) => {
 router.get("/products", (req, res, next) => {
   const perPage = 9;
 
-  let { category, price, productName, page = 1 } = req.query;
+  const { category, price, productName } = req.query;
+  let { page = 1 } = req.query;
 
   const searchQuery = {};
   if (category) searchQuery.category = category;
@@ -53,12 +54,10 @@ router.get("/products", (req, res, next) => {
   tryTo(next, async () => {
     const productCount = await Product.countDocuments(searchQuery);
     const max_page_ct = Math.ceil((productCount || 9) / 9);
-
     const categories = await Product.distinct("category");
 
-    if (parseInt(page) > max_page_ct || parseInt(page) < 1) {
-      page = 1;
-    };
+    // If page request is greater than max or less than 1 default to page 1
+    if (parseInt(page) > max_page_ct || parseInt(page) < 1) page = 1;
 
     const products = await Product.find(searchQuery)
       .skip(perPage * (page - 1))
