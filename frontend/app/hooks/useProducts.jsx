@@ -19,6 +19,8 @@ export default function useProducts(page = 1) {
         console.log(data);
         setIsLoading(false);
         setProducts(data.products);
+
+        // Todo: make this code better with spread
         setPageData({
           product_count: data.product_count,
           current_page: data.current_page,
