@@ -3,21 +3,28 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import useProducts from "./hooks/useProducts";
 import ProductCard from "./components/ProductCard";
+import ProductsContainer from "./components/ProductsContainer";
+import { createKey } from "./utilities/helpers";
+import PaginatorBar from "./components/PaginatorBar";
+import SearchAndFilterBar from "./components/SearchAndFilterBar";
 
 export default function Home() {
-  const {products, pageData, isLoading} = useProducts();
+  const {fetchProducts, products, pageData, isLoading } = useProducts();
 
   return (
     <div className={styles.page}>
-     <h1> Hello world </h1>
-     <div>
-      {!isLoading && <> {products.map((product) => {
-        return <ProductCard product={product} />
-      })} </>}
-
-      {!isLoading && <p> {pageData.product_count} </p>}
-      
-     </div>
+      <h1> Products </h1>
+      <SearchAndFilterBar />
+      {!isLoading && (
+        <>
+          <ProductsContainer>
+            {products.map((product) => {
+              return <ProductCard key={createKey()} product={product} />;
+            })}
+          </ProductsContainer>
+          <PaginatorBar pageData={pageData} fetchFunction={fetchProducts} />
+        </>
+      )}
     </div>
   );
 }

@@ -43,11 +43,11 @@ router.get("/generate-fake-data", (req, res, next) => {
 router.get("/products", (req, res, next) => {
   const perPage = 9;
 
-  const {category, price, query, page = 1} = req.query
+  const {category, price, productName, page = 1} = req.query
   
   const searchQuery = {};
   if (category) searchQuery.category = category;
-  if (query) searchQuery.name = {$regex : query, $options: "i"};
+  if (productName) searchQuery.name = {$regex : productName, $options: "i"};
   
   tryTo(next, async () => {
     const productCount = await Product.countDocuments(searchQuery);
