@@ -18,7 +18,7 @@ export default function PaginatorBar({
   };
 
   return (
-    <div className="w-full flex justify-center mb-3">
+    <div className="w-full mb-3 flex justify-center">
       <div className="w-full sm:w-1/2 flex flow-row justify-between">
         <div className="w-1/5 flex justify-end">
           <Button

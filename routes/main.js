@@ -56,7 +56,7 @@ router.get("/products", (req, res, next) => {
     const max_page_ct = Math.ceil((productCount || 9) / 9);
     const categories = await Product.distinct("category");
 
-    // If page request is greater than max or less than 1 default to page 1
+    // If page requested is greater than max or less than 1 default to page 1
     if (parseInt(page) > max_page_ct || parseInt(page) < 1) page = 1;
 
     const products = await Product.find(searchQuery)
@@ -96,7 +96,7 @@ router.get("/products/:id/reviews", (req, res, next) => {
 });
 
 router.post("/products", (req, res, next) => {
-  const  productData = JSON.parse(req.body.product);
+  const productData = JSON.parse(req.body.product);
   if (!productData) return sendResponse(res, 400);
 
   tryTo(next, () => {
