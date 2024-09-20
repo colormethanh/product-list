@@ -99,9 +99,9 @@ router.post("/products", (req, res, next) => {
   const productData = JSON.parse(req.body.product);
   if (!productData) return sendResponse(res, 400);
 
-  tryTo(next, () => {
+  tryTo(next, async () => {
     const product = new Product(productData);
-    product.save();
+    await product.save();
     return sendResponse(res, 200, product._id);
   });
 });
@@ -118,9 +118,9 @@ router.post("/products/:id/reviews", (req, res, next) => {
     if (!product) return sendResponse(res, 404);
 
     const review = new Review({ product: product._id, ...reviewData });
-    review.save();
+    await review.save();
     product.reviews.push(review);
-    product.save();
+    await product.save();
     return sendResponse(res, 400, review._id);
   });
 });
