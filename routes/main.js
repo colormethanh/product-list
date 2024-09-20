@@ -67,7 +67,7 @@ router.get("/products", (req, res, next) => {
     return sendResponse(res, 200, {
       products: products,
       product_count: productCount,
-      current_page: page,
+      current_page: parseInt(page),
       max_page: max_page_ct,
       categories: categories || [],
     });

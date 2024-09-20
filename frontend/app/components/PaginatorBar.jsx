@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import PaginationNumbers from "./PaginationNumbers";
+
 
 export default function PaginatorBar({
   pageData,
@@ -24,14 +25,14 @@ export default function PaginatorBar({
     fetchFunction(updatedQuery);
   };
 
+  
+
   return (
     <div className="w-full flex justify-center mb-3">
       <div className="w-3/4 flex justify-between">
         <Button onClick={(e) => onPrevPage(e)}> Prev Page </Button>
         {/* Todo: add proper pagination numbers in pagination numbers */}
-        <div className="">
-          {current_page} / {max_page}
-        </div>
+        <PaginationNumbers pageData={pageData} /> 
         <Button onClick={(e) => onNextPage(e)}> Next Page </Button>
       </div>
     </div>

@@ -1,12 +1,21 @@
-import React from 'react'
+import { useEffect, useState } from "react";
+import { calculatePaginationIndex } from "../utilities/helpers";
 
-export default function PaginationNumbers({pageData}) {
+export default function usePaginationIndexes({pageData}) {
+  const [indexArray, setIndexArray] = useState([]);
+  const {current_page, max_page} = pageData;
 
-  const { current_page, max_page, product_count } = pageData;
-
+  useEffect(() => {
+    const arr = Array.from({length: calculatePaginationIndex(current_page, max_page) }, (_, i) => parseInt(current_page) + i)
+    setIndexArray(arr);
+  }, [pageData])
+  
   return (
-    <div className=''>
-      {current_page} / {max_page}
+    <div className="">
+      {indexArray.map((i) => (
+        <div> {i} </div>
+      ))}
     </div>
-  )
+  );
 }
+
