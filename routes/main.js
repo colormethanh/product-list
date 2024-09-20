@@ -114,11 +114,9 @@ router.post("/products/:id/reviews", (req, res, next) => {
   if (!reviewData) return sendResponse(res, 400);
 
   tryTo(next, async () => {
-    // Todo: Create helper for finding models
     const product = await Product.findById({ _id: id });
     if (!product) return sendResponse(res, 404);
 
-    // todo: Create helper function for routes
     const review = new Review({ product: product._id, ...reviewData });
     review.save();
     product.reviews.push(review);
