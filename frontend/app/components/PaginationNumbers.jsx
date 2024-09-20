@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
-import { calculatePaginationIndex } from "../utilities/helpers";
+import { calculatePaginationIndex, createKey } from "../utilities/helpers";
+import PageNumber from "./PageNumber";
 
-export default function usePaginationIndexes({pageData}) {
-  const [indexArray, setIndexArray] = useState([]);
+export default function PaginationNumbers({pageData, onPageSelect}) {
+  const [pagesArray, setPagesArray] = useState([]);
   const {current_page, max_page} = pageData;
 
   useEffect(() => {
-    const arr = Array.from({length: calculatePaginationIndex(current_page, max_page) }, (_, i) => parseInt(current_page) + i)
-    setIndexArray(arr);
+    setPagesArray(calculatePaginationIndex(current_page, max_page));
   }, [pageData])
   
   return (
-    <div className="">
-      {indexArray.map((i) => (
-        <div> {i} </div>
+    <div className="flex flex-row justify-around w-1/2">
+      {pagesArray.map((pageNumber) => (
+        <PageNumber key={createKey()} pageNumber={pageNumber} isCurrent={pageNumber === current_page} onSelect={onPageSelect} />
       ))}
     </div>
   );

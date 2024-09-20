@@ -8,7 +8,7 @@ export default function ProductCard({ product }) {
           <div className="mt-1">
             Category: <span className="font-semibold">{product.category}</span>
           </div>
-          <div className="mt-1 text-2xl font-semibold">{product.price}</div>
+          <div className="mt-1 text-2xl font-semibold">$ {product.price}</div>
         </div>
         <div className="flex flex-col mb-1">
           <img className="p-3" src={product.image} alt="product image" />

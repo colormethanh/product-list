@@ -9,6 +9,8 @@ import { createKey } from "./utilities/helpers";
 import PaginatorBar from "./components/PaginatorBar";
 import SearchAndFilterBar from "./components/SearchAndFilterBar";
 
+// Todo examine responsiveness 
+
 export default function Home() {
   const [queries, setQueries] = useState({});
   const { fetchProducts, products, pageData, isLoading } = useProducts(queries);

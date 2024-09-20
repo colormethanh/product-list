@@ -18,9 +18,15 @@ export default function useProducts(queries) {
       const response = await fetch(searchUrl);
 
       if (!response.ok) {
-        // todo: set up error handling
-        console.log(response);
-        throw new Error("Api response was not okay");
+        setPageData({
+          product_count: 0,
+          current_page: 0,
+          max_page: 1,
+          categories: [],
+        });
+        setProducts([]);
+        setIsLoading(false);
+        return;
       }
 
       const data = await response.json();
@@ -28,7 +34,6 @@ export default function useProducts(queries) {
       setIsLoading(false);
       setProducts(data.products);
 
-      // Todo: make this code better with spread
       setPageData({
         product_count: data.product_count,
         current_page: data.current_page,
@@ -36,8 +41,16 @@ export default function useProducts(queries) {
         categories: data.categories,
       });
     } catch (err) {
-      // Todo: set up error handling
       console.log("Error fetching", err);
+
+      setPageData({
+        product_count: 0,
+        current_page: 0,
+        max_page: 0,
+        categories: [],
+      });
+      setProducts([]);
+      setIsLoading(false);
     }
   };
 

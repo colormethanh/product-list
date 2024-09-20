@@ -96,11 +96,10 @@ router.get("/products/:id/reviews", (req, res, next) => {
 });
 
 router.post("/products", (req, res, next) => {
-  const productData = JSON.parse(req.body.product);
+  const  productData = JSON.parse(req.body.product);
   if (!productData) return sendResponse(res, 400);
 
   tryTo(next, () => {
-    // Todo: validate post data
     const product = new Product(productData);
     product.save();
     return sendResponse(res, 200, product._id);

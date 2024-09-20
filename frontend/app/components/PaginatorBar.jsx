@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import PaginationNumbers from "./PaginationNumbers";
 
-
 export default function PaginatorBar({
   pageData,
   fetchFunction,
@@ -25,14 +24,18 @@ export default function PaginatorBar({
     fetchFunction(updatedQuery);
   };
 
-  
+  const onPageSelect = (e, page) => {
+    e.preventDefault();
+    const updatedQuery = { ...queries, page: page };
+    setQueries(updatedQuery);
+    fetchFunction(updatedQuery);
+  };
 
   return (
     <div className="w-full flex justify-center mb-3">
-      <div className="w-3/4 flex justify-between">
+      <div className="w-3/4 flex flow-row justify-center">
         <Button onClick={(e) => onPrevPage(e)}> Prev Page </Button>
-        {/* Todo: add proper pagination numbers in pagination numbers */}
-        <PaginationNumbers pageData={pageData} /> 
+        <PaginationNumbers pageData={pageData} onPageSelect={onPageSelect} />
         <Button onClick={(e) => onNextPage(e)}> Next Page </Button>
       </div>
     </div>
