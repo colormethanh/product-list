@@ -3,13 +3,13 @@ const createKey = () => {
 };
 
 // Get rear pages for the pagination array
-const getRearPageNumbers = (currentPage, maxVisiblePagesBehind) => {
-  let visiblePagesBehind = maxVisiblePagesBehind;
+const getRearPageNumbers = (currentPage, maxPageCount) => {
+  let visiblePagesBehind = maxPageCount;
   const previousPages = [];
 
-  if (currentPage - 1 - maxVisiblePagesBehind < 0) {
+  if (currentPage - 1 - maxPageCount < 0) {
     visiblePagesBehind =
-      maxVisiblePagesBehind - Math.abs(currentPage - 1 - maxVisiblePagesBehind);
+      maxPageCount - Math.abs(currentPage - 1 - maxPageCount);
   }
 
   if (visiblePagesBehind === 0) return previousPages;
@@ -34,22 +34,22 @@ const getFrontPageNumbers = (currentPage, maxPage, visiblePagesAhead) => {
 
 const calculatePaginationIndex = (currentPage, maxPage, pagesToShow = 5) => {
   let totalAvailablePages = pagesToShow - 1;
-  let maxVisiblePagesBehind = Math.ceil(totalAvailablePages / 2);
+  let maxPageCount = Math.ceil(totalAvailablePages / 2);
+  let previousPages = [];
+  let nextPages = [];
 
-  const previousPages = getRearPageNumbers(currentPage, maxVisiblePagesBehind);
+  // if current page is near end calculate front pages first
+  if (maxPageCount + currentPage > maxPage) {
+    nextPages = getFrontPageNumbers(currentPage, maxPage, totalAvailablePages);
+    totalAvailablePages -= nextPages.length;
+    previousPages = getRearPageNumbers(currentPage, totalAvailablePages);
+  } else {
+    previousPages = getRearPageNumbers(currentPage, maxPageCount);
+    totalAvailablePages -= previousPages.length;
+    nextPages = getFrontPageNumbers(currentPage, maxPage, totalAvailablePages);
+  }
 
-  totalAvailablePages -= previousPages.length;
-
-  const nextPages = getFrontPageNumbers(
-    currentPage,
-    maxPage,
-    totalAvailablePages
-  );
-
-  // calc frame length
   const visiblePages = [...previousPages, currentPage, ...nextPages];
-
-  console.log(visiblePages);
 
   return visiblePages;
 };

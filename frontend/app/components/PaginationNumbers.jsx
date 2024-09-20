@@ -11,7 +11,7 @@ export default function PaginationNumbers({pageData, onPageSelect}) {
   }, [pageData])
   
   return (
-    <div className="flex flex-row justify-around w-1/2">
+    <div className="flex flex-row w-full">
       {pagesArray.map((pageNumber) => (
         <PageNumber key={createKey()} pageNumber={pageNumber} isCurrent={pageNumber === current_page} onSelect={onPageSelect} />
       ))}

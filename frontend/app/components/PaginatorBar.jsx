@@ -8,21 +8,7 @@ export default function PaginatorBar({
   queries,
   setQueries,
 }) {
-  const { current_page, max_page, product_count } = pageData;
-
-  const onNextPage = (e) => {
-    e.preventDefault();
-    const updatedQuery = { ...queries, page: parseInt(current_page) + 1 };
-    setQueries(updatedQuery);
-    fetchFunction(updatedQuery);
-  };
-
-  const onPrevPage = (e) => {
-    e.preventDefault();
-    const updatedQuery = { ...queries, page: parseInt(current_page) - 1 };
-    setQueries(updatedQuery);
-    fetchFunction(updatedQuery);
-  };
+  const { current_page, max_page } = pageData;
 
   const onPageSelect = (e, page) => {
     e.preventDefault();
@@ -33,10 +19,28 @@ export default function PaginatorBar({
 
   return (
     <div className="w-full flex justify-center mb-3">
-      <div className="w-3/4 flex flow-row justify-center">
-        <Button onClick={(e) => onPrevPage(e)}> Prev Page </Button>
-        <PaginationNumbers pageData={pageData} onPageSelect={onPageSelect} />
-        <Button onClick={(e) => onNextPage(e)}> Next Page </Button>
+      <div className="w-full sm:w-1/2 flex flow-row justify-between">
+        <div className="w-1/5 flex justify-end">
+          <Button
+            classText={current_page === 1 && "hidden"}
+            onClick={(e) => onPageSelect(e, current_page - 1)}
+          >
+            {" "}
+            Prev{" "}
+          </Button>
+        </div>
+        <div className="w-3/5 flex justify-center">
+          <PaginationNumbers pageData={pageData} onPageSelect={onPageSelect} />
+        </div>
+        <div className="w-1/5 flex justify-start">
+          <Button
+            classText={current_page === max_page && "hidden"}
+            onClick={(e) => onPageSelect(e, current_page + 1)}
+          >
+            {" "}
+            Next{" "}
+          </Button>
+        </div>
       </div>
     </div>
   );

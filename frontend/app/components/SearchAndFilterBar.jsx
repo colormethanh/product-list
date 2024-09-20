@@ -24,20 +24,20 @@ export default function SearchAndFilterBar({
 
   const handleProductSearch = (e) => {
     if (e.key === "Enter") {
-      setQueries((prev) => ({...prev, productName: productNameInput}));
+      setQueries((prev) => ({ ...prev, productName: productNameInput }));
       setProductNameInput("");
-    };
+    }
   };
 
   const handleInputChange = (e) => {
     setProductNameInput(e.target.value);
-  }
+  };
 
   return (
-    <div className="text-black w-full mt-3 flex justify-center">
+    <div className="text-[#904420] w-full mt-3 mx-3 flex justify-center">
       <input
         type="text"
-        className="w-3/5 border rounded-sm px-4 py-2 focus:outline-none"
+        className="w-3/5 border rounded-sm px-4 py-2 focus:outline-none hidden sm:block"
         placeholder="Enter text"
         value={productNameInput}
         onChange={handleInputChange}
