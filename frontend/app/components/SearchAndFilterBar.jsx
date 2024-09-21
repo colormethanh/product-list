@@ -11,13 +11,11 @@ export default function SearchAndFilterBar({
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const handleSortSelect = (e) => {
-    console.log(`price sort: ${e.target.value}`);
     setSelectedSort(e.target.value);
     setQueries((prev) => ({ ...prev, price: e.target.value }));
   };
 
   const handleCategorySelect = (e) => {
-    console.log(`category: ${e.target.value}`);
     setSelectedCategory(e.target.value);
     setQueries((prev) => ({ ...prev, category: e.target.value }));
   };

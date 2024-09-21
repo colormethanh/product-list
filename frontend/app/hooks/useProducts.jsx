@@ -13,7 +13,6 @@ export default function useProducts(queries) {
       const searchUrl = `${url}?price=${queries.price || ""}&productName=${
         queries.productName || ""
       }&page=${queries.page || 1}&category=${queries.category || ""}`;
-      console.log(`fetching url: ${searchUrl}`);
 
       const response = await fetch(searchUrl);
 
@@ -30,7 +29,6 @@ export default function useProducts(queries) {
       }
 
       const data = await response.json();
-      console.log(data);
       setIsLoading(false);
       setProducts(data.products);
 
@@ -41,7 +39,6 @@ export default function useProducts(queries) {
         categories: data.categories,
       });
     } catch (err) {
-      console.log("Error fetching", err);
 
       setPageData({
         product_count: 0,
